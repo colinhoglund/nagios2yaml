@@ -25,6 +25,23 @@ objects = {
 'timeperiods': [],
 }
 
+failed_objects = []
+
+# prints out YAML formatted configuration
+def output_yaml(obj_type, name_directive):
+    for obj in objects.get(obj_type):
+        if not obj.get(name_directive):
+            failed_objects.append(str(obj))
+            break
+        if obj_type == 'services':
+            print '  \'' + obj.get(name_directive) + '\':'
+        else:
+            print '  ' + obj.get(name_directive) + ':'
+        for directive in obj.iteritems():
+            if directive[0] == name_directive:
+                continue
+            print '    ' + directive[0] + ': ' + '\'' + directive[1] + '\''
+
 temp_obj = {}
 obj_type = ''
 for line in text.readlines():
@@ -54,6 +71,18 @@ for line in text.readlines():
         continue
 
     # update temp_obj
+    if line == '\n':
+        continue
     temp_obj[line.split()[0]] = ' '.join(line.split()[1:])
 
-print objects
+for obj_type in objects.iteritems():
+    if len(obj_type[1]) > 0:
+        print 'nagios::' + obj_type[0] + ':'
+        if obj_type[0] == 'services':
+            output_yaml(obj_type[0], 'service_description')
+        else:
+            output_yaml(obj_type[0], obj_type[0][:-1] + '_name')
+
+print "The following objects failed to compile:"
+for obj in failed_objects:
+    print obj
