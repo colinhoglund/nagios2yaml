@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 '''
 Tool for converting Nagios object definitions
-  to YAML format.
+  to YAML format. Simply pass n2y.py a text
+  file with nagios objects.
 
 Usage: ./n2y.py <filename>
 '''
@@ -83,6 +84,7 @@ for obj_type in objects.iteritems():
         else:
             output_yaml(obj_type[0], obj_type[0][:-1] + '_name')
 
-print "The following objects failed to compile:"
-for obj in failed_objects:
-    print obj
+if len(failed_objects) > 0:
+    print "The following objects failed to compile:"
+    for obj in failed_objects:
+        print obj
